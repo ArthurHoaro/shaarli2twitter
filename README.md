@@ -3,6 +3,12 @@
 This plugin uses the Twitter API to automatically tweet public links published on 
 [Shaarli](https://github.com/shaarli/Shaarli/).
 
+## Requirements
+
+  - PHP 5.3
+  - PHP cURL extension
+  - Shaarli > v0.8.0
+
 ## Installation
 
 Download the latest release, and put the folder `shaarli2twitter` under your `plugins/` directory.

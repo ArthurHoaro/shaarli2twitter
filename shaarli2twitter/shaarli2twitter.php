@@ -233,7 +233,7 @@ function is_config_valid($conf)
         'TWITTER_ACCESS_TOKEN_SECRET',
     );
     foreach ($mandatory as $value) {
-        $setting = $conf->get('plugins'. $value);
+        $setting = $conf->get('plugins.'. $value);
         if (empty($setting)) {
             return false;
         }
