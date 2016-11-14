@@ -44,6 +44,22 @@ function shaarli2twitter_init($conf)
 }
 
 /**
+ * Add the JS file: disable the tweet button if the link is set to private.
+ *
+ * @param array         $data New link values.
+ * @param ConfigManager $conf instance.
+ *
+ * @return array $data with the JS file.
+ */
+function hook_shaarli2twitter_render_footer($data, $conf)
+{
+    if ($data['_PAGE_'] == Router::$PAGE_EDITLINK) {
+        $data['js_files'][] = PluginManager::$PLUGINS_PATH . '/shaarli2twitter/shaarli2twitter.js';
+    }
+    return $data;
+}
+
+/**
  * Hook save link: will automatically publish a tweet when a new public link is shaared.
  *
  * @param array         $data New link values.
@@ -54,7 +70,7 @@ function shaarli2twitter_init($conf)
 function hook_shaarli2twitter_save_link($data, $conf)
 {
     // No tweet without config, for private links, or on edit.
-    if (! is_config_valid($conf) || $data['updated'] != false || $data['private']) {
+    if (! is_config_valid($conf) || $data['updated'] != false || $data['private'] || ! isset($_POST['tweet'])) {
         return $data;
     }
 
@@ -84,6 +100,30 @@ function hook_shaarli2twitter_save_link($data, $conf)
     }
 
     return $link;
+}
+
+/**
+ * Hook render_editlink: add a checkbox to tweet the new link or not.
+ *
+ * @param array         $data New link values.
+ * @param ConfigManager $conf instance.
+ *
+ * @return array $data with `edit_link_plugin` placeholder filled.
+ */
+function hook_shaarli2twitter_render_editlink($data, $conf)
+{
+    if (! $data['link_is_new'] || ! is_config_valid($conf)) {
+        return $data;
+    }
+
+    $private = $conf->get('privacy.default_private_links', false);
+
+    $html = file_get_contents(PluginManager::$PLUGINS_PATH . '/shaarli2twitter/edit_link.html');
+    $html = sprintf($html, $private ? '' : 'checked="checked"');
+
+    $data['edit_link_plugin'][] = $html;
+
+    return $data;
 }
 
 /**
