@@ -7,7 +7,7 @@ This plugin uses the Twitter API to automatically tweet public links published o
 
   - PHP 5.3
   - PHP cURL extension
-  - Shaarli > v0.8.0
+  - Shaarli >= v0.8.0
 
 ## Installation
 
