@@ -12,7 +12,7 @@ to post it on Twitter.
 
   - PHP 5.3
   - PHP cURL extension
-  - Shaarli >= v0.8.0
+  - Shaarli >= v0.8.1
 
 ## Installation
 
