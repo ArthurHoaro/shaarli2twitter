@@ -5,6 +5,8 @@
  *
  * This plugin uses the Twitter API to automatically tweet public links published on Shaarli.
  * Note: this requires a valid API authentication using OAuth.
+ *
+ * Compatibility: Shaarli v0.8.1.
  */
 
 /**
@@ -70,7 +72,6 @@ function hook_shaarli2twitter_render_footer($data, $conf)
 function hook_shaarli2twitter_save_link($data, $conf)
 {
     // No tweet without config, for private links, or on edit.
-    // Note: ! isset($data['updated']) can be removed for v0.8.1+ release.
     if (! is_config_valid($conf)
         || (isset($data['updated']) && $data['updated'] != false)
         || $data['private']
@@ -90,7 +91,7 @@ function hook_shaarli2twitter_save_link($data, $conf)
 
     // URL: notes becomes permalinks, and all permalinks if the option is enabled
     if ($conf->get('plugins.TWITTER_USE_PERMALINK') || startsWith($data['url'], '?')) {
-        $data['url'] = index_url($_SERVER) . '?' . smallHash($data['linkdate']);
+        $data['url'] = index_url($_SERVER) . '?' . $data['shorturl'];
     }
 
     $format = $conf->get('plugins.TWITTER_TWEET_FORMAT', DEFAULT_FORMAT);
@@ -117,9 +118,6 @@ function hook_shaarli2twitter_save_link($data, $conf)
  */
 function hook_shaarli2twitter_render_editlink($data, $conf)
 {
-    // FIXME! Remove this line after v0.8.1 release (init auto called)
-    shaarli2twitter_init($conf);
-
     if (! $data['link_is_new'] || ! is_config_valid($conf)) {
         return $data;
     }
