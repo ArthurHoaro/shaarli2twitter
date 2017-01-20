@@ -1,0 +1,18 @@
+{
+  "name": "arthurhoaro/shaarli2twitter",
+  "description": "Automatically tweet your links from Shaarli ",
+  "type": "project",
+  "license": "MIT",
+  "homepage": "https://github.com/ArthurHoaro/shaarli2twitter",
+  "support": {
+    "issues": "https://github.com/ArthurHoaro/shaarli2twitter/issues"
+  },
+  "require": {
+    "php": ">=5.3"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "4.8.*"
+  },
+  "autoload": {
+  }
+}

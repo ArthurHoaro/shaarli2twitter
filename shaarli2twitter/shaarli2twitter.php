@@ -248,7 +248,7 @@ function replace_placeholder_array($tweet, $placeholder, $value)
  */
 function get_current_length($tweet)
 {
-    return strlen(remove_remaining_placeholders($tweet));
+    return strlen(remove_remaining_placeholders(replace_url_by_tco($tweet)));
 }
 
 /**
@@ -261,6 +261,19 @@ function get_current_length($tweet)
 function remove_remaining_placeholders($tweet)
 {
     return preg_replace('#\${\w+}#', '', $tweet);
+}
+
+/**
+ * Replace all URL by a default string of TWEET_URL_LENGTH characters.
+ *
+ * @param string $tweet Current string for the tweet.
+ *
+ * @return string $tweet without any URL.
+ */
+function replace_url_by_tco($tweet)
+{
+    $regex = '!https?://\S+[[:alnum:]]/?!si';
+    return preg_replace($regex, str_repeat('#', TWEET_URL_LENGTH), $tweet);
 }
 
 /**
