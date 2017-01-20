@@ -89,10 +89,7 @@ function hook_shaarli2twitter_save_link($data, $conf)
         $data['tags'][$i] = '#'. $data['tags'][$i];
     }
 
-    // URL: notes becomes permalinks, and all permalinks if the option is enabled
-    if ($conf->get('plugins.TWITTER_USE_PERMALINK') || startsWith($data['url'], '?')) {
-        $data['url'] = index_url($_SERVER) . '?' . $data['shorturl'];
-    }
+    $data['permalink'] = index_url($_SERVER) . '?' . $data['shorturl'];
 
     $format = $conf->get('plugins.TWITTER_TWEET_FORMAT', DEFAULT_FORMAT);
     $tweet = format_tweet($data, $format);
@@ -176,12 +173,12 @@ function tweet($conf, $tweet)
 function format_tweet($link, $format)
 {
     // Tweets are limited to 140 chars, we need to prioritize what will be displayed
-    $priorities = array('url', 'title', 'tags', 'description');
+    $priorities = array('url', 'permalink', 'title', 'tags', 'description');
 
     $tweet = $format;
     foreach ($priorities as $priority) {
-        if (get_current_length($format) >= TWEET_LENGTH) {
-            return substr(remove_remaining_placeholders($tweet), 0, TWEET_LENGTH);
+        if (get_current_length($tweet) >= TWEET_LENGTH) {
+            return remove_remaining_placeholders($tweet);
         }
 
         $tweet = replace_placeholder($tweet, $priority, $link[$priority]);
@@ -207,9 +204,9 @@ function replace_placeholder($tweet, $placeholder, $value)
 
     $current = get_current_length($tweet);
     // Tweets URL have a fixed size due to t.co
-    $valueLength = ($placeholder != 'url') ? strlen($value) : TWEET_URL_LENGTH;
+    $valueLength = ($placeholder != 'url' && $placeholder != 'permalink') ? strlen($value) : TWEET_URL_LENGTH;
     if ($current + $valueLength > TWEET_LENGTH) {
-        $value = substr($value, 0, TWEET_LENGTH - $current - 1) . '…';
+        $value = substr($value, 0, TWEET_LENGTH - $current - 3) . '…';
     }
     return str_replace('${'. $placeholder .'}', $value, $tweet);
 }

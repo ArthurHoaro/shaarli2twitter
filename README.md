@@ -58,15 +58,6 @@ You now have everything required to set up shaarli2twitter plugin.
 
 ## Settings
 
-### TWITTER_USE_PERMALINK
-
-Enable this setting to tweet links to Shaarli permalinks instead of direct links.
-
-*Values*:
-
-  - `0`: disabled, tweet direct links
-  - `1`: enabled, tweet Shaarli's permalink
-  
 ### TWITTER_TWEET_FORMAT
 
 This setting shows the format of tweets. You can use placeholders which will be filled 
@@ -75,6 +66,7 @@ until the 140 chars limit is reached. Values may be truncated if the limit is re
 Available placeholders, in order of priority:
 
   * `${url}`: Shaare URL (will be automatically replaced as `t.co` links).
+  * `${permalink}`: Shaare permalink (will be automatically replaced as `t.co` links).
   * `${title}`: Shaare title.
   * `${tags}`: List of shaare tags displayed as hashtags (`#tag1 #tag2`...).
   * `${description}`: Shaare description.   
