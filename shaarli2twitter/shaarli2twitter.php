@@ -206,7 +206,7 @@ function replace_placeholder($tweet, $placeholder, $value)
     // Tweets URL have a fixed size due to t.co
     $valueLength = ($placeholder != 'url' && $placeholder != 'permalink') ? strlen($value) : TWEET_URL_LENGTH;
     if ($current + $valueLength > TWEET_LENGTH) {
-        $value = substr($value, 0, TWEET_LENGTH - $current - 3) . '…';
+        $value = mb_strcut($value, 0, TWEET_LENGTH - $current - 3) . '…';
     }
     return str_replace('${'. $placeholder .'}', $value, $tweet);
 }
