@@ -1,4 +1,4 @@
-description="Automatically publish your Shaares to your Twitter account. Read <a href="#">the documentation</a> for configuration."
+description="Automatically publish your Shaares to your Twitter account. Read <a href="https://github.com/ArthurHoaro/shaarli2twitter/blob/master/README.md#configuration">the documentation</a> for configuration."
 parameters="TWITTER_API_KEY;TWITTER_API_SECRET;TWITTER_ACCESS_TOKEN;TWITTER_ACCESS_TOKEN_SECRET;TWITTER_TWEET_FORMAT"
 parameter.TWITTER_API_KEY="Consumer Key (API Key)"
 parameter.TWITTER_API_SECRET="Consumer Secret (API Secret)"
