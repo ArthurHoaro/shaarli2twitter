@@ -62,7 +62,7 @@ You now have everything required to set up shaarli2twitter plugin.
 ### TWITTER_TWEET_FORMAT
 
 This setting shows the format of tweets. You can use placeholders which will be filled 
-until the 140 chars limit is reached. Values may be truncated if the limit is reached.
+until the 280 chars limit is reached. Values may be truncated if the limit is reached.
 
 Available placeholders, in order of priority:
 

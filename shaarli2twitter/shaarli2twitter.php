@@ -12,7 +12,7 @@
 /**
  * Maximum tweet length.
  */
-const TWEET_LENGTH = 140;
+const TWEET_LENGTH = 280;
 
 /**
  * Length of t.co transformed URL.
@@ -158,7 +158,7 @@ function tweet($conf, $tweet)
 }
 
 /**
- * This function will put link data in format placeholders, without overreaching 140 char.
+ * This function will put link data in format placeholders, without overreaching 280 char.
  * Placeholders have priorities, and will be replace until the limit is reached:
  *   1. URL
  *   2. Title
