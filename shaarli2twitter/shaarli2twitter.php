@@ -86,7 +86,15 @@ function hook_shaarli2twitter_save_link($data, $conf)
     // We will use an array to generate hashtags, then restore original shaare tags.
     $data['tags'] = array_values(array_filter(explode(' ', $data['tags'])));
     for ($i = 0; $i < count($data['tags']); $i++) {
-        $data['tags'][$i] = '#'. $data['tags'][$i];
+        if($data['tags'][$i][0] != '#') { // If the tag is already a hashtag we don't need to
+             $data['tags'][$i] = '#'. $data['tags'][$i];
+        }
+    }
+
+   
+    // In case of note, we use full URL
+    if($data['url'][0] == '?') {
+        $data['url'] = index_url($_SERVER) . $data['url']; 
     }
 
     $data['permalink'] = index_url($_SERVER) . '?' . $data['shorturl'];
