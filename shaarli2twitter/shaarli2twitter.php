@@ -98,16 +98,15 @@ function hook_shaarli2twitter_save_link($data, $conf)
     // We will use an array to generate hashtags, then restore original shaare tags.
     $data['tags'] = array_values(array_filter(explode(' ', $data['tags'])));
     for ($i = 0; $i < count($data['tags']); $i++) {
-        if ($data['tags'][$i][0] != '#') { // If the tag is already a hashtag we don't need to
-             $data['tags'][$i] = '#'. $data['tags'][$i];
-        }
+         // Keep tags strictly alphanumerical because Twitter only allows that.
+        $data['tags'][$i] = tagify($data['tags'][$i]);
     }
 
 
     $data['permalink'] = index_url($_SERVER) . '?' . $data['shorturl'];
    
     // In case of note, we use permalink
-    if ($data['url'][0] == '?') {
+   if (isLinkNote($data)) {
         $data['url'] = $data['permalink'];
         // Hide URL when sharing a note (microblog mode)
         $hide = $conf->get('plugins.TWITTER_HIDE_URL', DEFAULT_HIDE_URL);
@@ -118,10 +117,6 @@ function hook_shaarli2twitter_save_link($data, $conf)
             $data['url'] = (get_current_length($tweet) >= TWEET_LENGTH) ? $data['permalink'] : '';
         }
     }
-
-    
-
-    
 
     $format = $conf->get('plugins.TWITTER_TWEET_FORMAT', DEFAULT_FORMAT);
     $tweet = format_tweet($data, $format);
@@ -327,4 +322,29 @@ function is_config_valid($conf)
         }
     }
     return true;
+}
+
+/**
+ * Determines if the link is a note.
+ * From kalvn/shaarli2mastodon
+ * 
+ * @param  array  $link The link to check.
+ * 
+ * @return boolean      Whether the link is a note or not.
+ */
+function isLinkNote($link){
+    return $link['shorturl'] === substr($link['url'], 1);
+}
+
+/**
+ * Modifies a tag to make them real Tweet tags.
+ * From kalvn/shaarli2mastodon
+ * 
+ * @param  string $tag The tag to change.
+ * 
+ * @return string      The tag modified to be valid.
+ */
+function tagify($tag){
+    // Regex inspired by https://gist.github.com/janogarcia/3946583
+    return '#' . preg_replace('/[^0-9_\p{L}]/u', '', $tag);
 }
