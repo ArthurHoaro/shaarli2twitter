@@ -105,14 +105,14 @@ function hook_shaarli2twitter_save_link($data, $conf)
     $data['tags'] = array_values(array_filter(explode(' ', $data['tags'])));
     for ($i = 0; $i < count($data['tags']); $i++) {
          // Keep tags strictly alphanumerical because Twitter only allows that.
-        $data['tags'][$i] = tagify($data['tags'][$i]);
+        $data['tags'][$i] = get_tagify($data['tags'][$i]);
     }
 
 
     $data['permalink'] = index_url($_SERVER) . '?' . $data['shorturl'];
    
     // In case of note, we use permalink
-   if (isLinkNote($data)) {
+   if (is_link_note($data)) {
         $data['url'] = $data['permalink'];
         // Hide URL when sharing a note (microblog mode)
         $hide = $conf->get('plugins.TWITTER_HIDE_URL', TWEET_HIDE_URL);
@@ -338,7 +338,7 @@ function is_config_valid($conf)
  * 
  * @return boolean      Whether the link is a note or not.
  */
-function isLinkNote($link){
+function is_link_note($link){
     return $link['shorturl'] === substr($link['url'], 1);
 }
 
@@ -350,7 +350,7 @@ function isLinkNote($link){
  * 
  * @return string      The tag modified to be valid.
  */
-function tagify($tag){
+function get_tagify($tag){
     // Regex inspired by https://gist.github.com/janogarcia/3946583
     return '#' . preg_replace('/[^0-9_\p{L}]/u', '', $tag);
 }
