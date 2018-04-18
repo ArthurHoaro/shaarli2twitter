@@ -54,7 +54,7 @@ function shaarli2twitter_init($conf)
     }
 
     $hide = $conf->get('plugins.TWITTER_HIDE_URL');
-    if (empty($format)) {
+    if (empty($hide)) {
         $conf->set('plugins.TWITTER_HIDE_URL', TWEET_HIDE_URL);
     }
 
