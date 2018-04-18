@@ -112,8 +112,8 @@ function hook_shaarli2twitter_save_link($data, $conf)
     $data['permalink'] = index_url($_SERVER) . '?' . $data['shorturl'];
 
     // Hide URL when sharing a note (microblog mode)
-    $microblog = $conf->get('plugins.TWITTER_HIDE_URL', DEFAULT_HIDE_URL);
-    if ($microblog == 'yes') {
+    $hide = $conf->get('plugins.TWITTER_HIDE_URL', DEFAULT_HIDE_URL);
+    if ($hide == 'yes') {
         $format = $conf->get('plugins.TWITTER_TWEET_FORMAT', DEFAULT_FORMAT);
         $data['url'] = '';
         $tweet = format_tweet($data, $format);
