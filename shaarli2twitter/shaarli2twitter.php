@@ -103,22 +103,25 @@ function hook_shaarli2twitter_save_link($data, $conf)
         }
     }
 
-   
-    // In case of note, we use full URL
-    if ($data['url'][0] == '?') {
-        $data['url'] = index_url($_SERVER) . $data['url'];
-    }
 
     $data['permalink'] = index_url($_SERVER) . '?' . $data['shorturl'];
-
-    // Hide URL when sharing a note (microblog mode)
-    $hide = $conf->get('plugins.TWITTER_HIDE_URL', DEFAULT_HIDE_URL);
-    if ($hide == 'yes') {
-        $format = $conf->get('plugins.TWITTER_TWEET_FORMAT', DEFAULT_FORMAT);
-        $data['url'] = '';
-        $tweet = format_tweet($data, $format);
-        $data['url'] = (get_current_length($tweet) >= TWEET_LENGTH) ? $data['permalink'] : '';
+   
+    // In case of note, we use permalink
+    if ($data['url'][0] == '?') {
+        $data['url'] = $data['permalink'];
+        // Hide URL when sharing a note (microblog mode)
+        $hide = $conf->get('plugins.TWITTER_HIDE_URL', DEFAULT_HIDE_URL);
+        if ($hide == 'yes') {
+            $format = $conf->get('plugins.TWITTER_TWEET_FORMAT', DEFAULT_FORMAT);
+            $data['url'] = '';
+            $tweet = format_tweet($data, $format);
+            $data['url'] = (get_current_length($tweet) >= TWEET_LENGTH) ? $data['permalink'] : '';
+        }
     }
+
+    
+
+    
 
     $format = $conf->get('plugins.TWITTER_TWEET_FORMAT', DEFAULT_FORMAT);
     $tweet = format_tweet($data, $format);
