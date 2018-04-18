@@ -27,6 +27,13 @@ const TWEET_URL_LENGTH = 23;
 const DEFAULT_FORMAT = '#Shaarli: ${title} ${url} ${tags}';
 
 /**
+ * Hide url when sharing a note
+ * Values can be 'yes' or 'no'.
+ */
+const DEFAULT_HIDE_URL = 'no';
+
+
+/**
  * Init function: check settings, and set default format.
  *
  * @param ConfigManager $conf instance.
@@ -38,6 +45,11 @@ function shaarli2twitter_init($conf)
     $format = $conf->get('plugins.TWITTER_TWEET_FORMAT');
     if (empty($format)) {
         $conf->set('plugins.TWITTER_TWEET_FORMAT', DEFAULT_FORMAT);
+    }
+
+    $format = $conf->get('plugins.TWITTER_HIDE_URL');
+    if (empty($format)) {
+        $conf->set('plugins.TWITTER_HIDE_URL', DEFAULT_HIDE_URL);
     }
 
     if (! is_config_valid($conf)) {
@@ -86,18 +98,27 @@ function hook_shaarli2twitter_save_link($data, $conf)
     // We will use an array to generate hashtags, then restore original shaare tags.
     $data['tags'] = array_values(array_filter(explode(' ', $data['tags'])));
     for ($i = 0; $i < count($data['tags']); $i++) {
-        if($data['tags'][$i][0] != '#') { // If the tag is already a hashtag we don't need to
+        if ($data['tags'][$i][0] != '#') { // If the tag is already a hashtag we don't need to
              $data['tags'][$i] = '#'. $data['tags'][$i];
         }
     }
 
    
     // In case of note, we use full URL
-    if($data['url'][0] == '?') {
-        $data['url'] = index_url($_SERVER) . $data['url']; 
+    if ($data['url'][0] == '?') {
+        $data['url'] = index_url($_SERVER) . $data['url'];
     }
 
     $data['permalink'] = index_url($_SERVER) . '?' . $data['shorturl'];
+
+    // Hide URL when sharing a note (microblog mode)
+    $microblog = $conf->get('plugins.TWITTER_HIDE_URL', DEFAULT_HIDE_URL);
+    if ($microblog == 'yes') {
+        $format = $conf->get('plugins.TWITTER_TWEET_FORMAT', DEFAULT_FORMAT);
+        $data['url'] = '';
+        $tweet = format_tweet($data, $format);
+        $data['url'] = (get_current_length($tweet) >= TWEET_LENGTH) ? $data['permalink'] : '';
+    }
 
     $format = $conf->get('plugins.TWITTER_TWEET_FORMAT', DEFAULT_FORMAT);
     $tweet = format_tweet($data, $format);
@@ -180,7 +201,7 @@ function tweet($conf, $tweet)
  */
 function format_tweet($link, $format)
 {
-    // Tweets are limited to 140 chars, we need to prioritize what will be displayed
+    // Tweets are limited to 280 chars, we need to prioritize what will be displayed
     $priorities = array('url', 'permalink', 'title', 'tags', 'description');
 
     $tweet = $format;
