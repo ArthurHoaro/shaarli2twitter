@@ -6,6 +6,7 @@
  * This plugin uses the Twitter API to automatically tweet public links published on Shaarli.
  * Note: this requires a valid API authentication using OAuth.
  *
+ *
  * Compatibility: Shaarli v0.8.1.
  */
 
@@ -24,13 +25,18 @@ const TWEET_URL_LENGTH = 23;
 /**
  * Default tweet format if none is provided.
  */
-const DEFAULT_FORMAT = '#Shaarli: ${title} ${url} ${tags}';
+const TWEET_DEFAULT_FORMAT = '#Shaarli: ${title} ${url} ${tags}';
+
+/**
+ * Authorized placeholders.
+ */
+const TWEET_ALLOWED_PLACEHOLDERS = array('url', 'permalink', 'title', 'tags', 'description');
 
 /**
  * Hide url when sharing a note
  * Values can be 'yes' or 'no'.
  */
-const DEFAULT_HIDE_URL = 'no';
+const TWEET_HIDE_URL = 'no';
 
 
 /**
@@ -44,12 +50,12 @@ function shaarli2twitter_init($conf)
 {
     $format = $conf->get('plugins.TWITTER_TWEET_FORMAT');
     if (empty($format)) {
-        $conf->set('plugins.TWITTER_TWEET_FORMAT', DEFAULT_FORMAT);
+        $conf->set('plugins.TWITTER_TWEET_FORMAT', TWEET_DEFAULT_FORMAT);
     }
 
-    $format = $conf->get('plugins.TWITTER_HIDE_URL');
+    $hide = $conf->get('plugins.TWITTER_HIDE_URL');
     if (empty($format)) {
-        $conf->set('plugins.TWITTER_HIDE_URL', DEFAULT_HIDE_URL);
+        $conf->set('plugins.TWITTER_HIDE_URL', TWEET_HIDE_URL);
     }
 
     if (! is_config_valid($conf)) {
@@ -109,16 +115,16 @@ function hook_shaarli2twitter_save_link($data, $conf)
    if (isLinkNote($data)) {
         $data['url'] = $data['permalink'];
         // Hide URL when sharing a note (microblog mode)
-        $hide = $conf->get('plugins.TWITTER_HIDE_URL', DEFAULT_HIDE_URL);
+        $hide = $conf->get('plugins.TWITTER_HIDE_URL', TWEET_HIDE_URL);
         if ($hide == 'yes') {
-            $format = $conf->get('plugins.TWITTER_TWEET_FORMAT', DEFAULT_FORMAT);
+            $format = $conf->get('plugins.TWITTER_TWEET_FORMAT', TWEET_DEFAULT_FORMAT);
             $data['url'] = '';
             $tweet = format_tweet($data, $format);
             $data['url'] = (get_current_length($tweet) >= TWEET_LENGTH) ? $data['permalink'] : '';
         }
     }
 
-    $format = $conf->get('plugins.TWITTER_TWEET_FORMAT', DEFAULT_FORMAT);
+    $format = $conf->get('plugins.TWITTER_TWEET_FORMAT', TWEET_DEFAULT_FORMAT);
     $tweet = format_tweet($data, $format);
     $response = tweet($conf, $tweet);
     $response = json_decode($response, true);
@@ -200,7 +206,7 @@ function tweet($conf, $tweet)
 function format_tweet($link, $format)
 {
     // Tweets are limited to 280 chars, we need to prioritize what will be displayed
-    $priorities = array('url', 'permalink', 'title', 'tags', 'description');
+    $priorities = TWEET_ALLOWED_PLACEHOLDERS;
 
     $tweet = $format;
     foreach ($priorities as $priority) {
@@ -326,7 +332,7 @@ function is_config_valid($conf)
 
 /**
  * Determines if the link is a note.
- * From kalvn/shaarli2mastodon
+ * From kalvn's shaarli2mastodon - https://github.com/kalvn/shaarli2mastodon
  * 
  * @param  array  $link The link to check.
  * 
@@ -338,7 +344,7 @@ function isLinkNote($link){
 
 /**
  * Modifies a tag to make them real Tweet tags.
- * From kalvn/shaarli2mastodon
+ * From kalvn's shaarli2mastodon - https://github.com/kalvn/shaarli2mastodon
  * 
  * @param  string $tag The tag to change.
  * 
