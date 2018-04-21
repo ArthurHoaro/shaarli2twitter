@@ -6,6 +6,7 @@
  * This plugin uses the Twitter API to automatically tweet public links published on Shaarli.
  * Note: this requires a valid API authentication using OAuth.
  *
+ *
  * Compatibility: Shaarli v0.8.1.
  */
 
@@ -24,7 +25,19 @@ const TWEET_URL_LENGTH = 23;
 /**
  * Default tweet format if none is provided.
  */
-const DEFAULT_FORMAT = '#Shaarli: ${title} ${url} ${tags}';
+const TWEET_DEFAULT_FORMAT = '#Shaarli: ${title} ${url} ${tags}';
+
+/**
+ * Authorized placeholders.
+ */
+const TWEET_ALLOWED_PLACEHOLDERS = array('url', 'permalink', 'title', 'tags', 'description');
+
+/**
+ * Hide url when sharing a note
+ * Values can be 'yes' or 'no'.
+ */
+const TWEET_HIDE_URL = 'no';
+
 
 /**
  * Init function: check settings, and set default format.
@@ -37,7 +50,12 @@ function shaarli2twitter_init($conf)
 {
     $format = $conf->get('plugins.TWITTER_TWEET_FORMAT');
     if (empty($format)) {
-        $conf->set('plugins.TWITTER_TWEET_FORMAT', DEFAULT_FORMAT);
+        $conf->set('plugins.TWITTER_TWEET_FORMAT', TWEET_DEFAULT_FORMAT);
+    }
+
+    $hide = $conf->get('plugins.TWITTER_HIDE_URL');
+    if (empty($hide)) {
+        $conf->set('plugins.TWITTER_HIDE_URL', TWEET_HIDE_URL);
     }
 
     if (! is_config_valid($conf)) {
@@ -86,12 +104,27 @@ function hook_shaarli2twitter_save_link($data, $conf)
     // We will use an array to generate hashtags, then restore original shaare tags.
     $data['tags'] = array_values(array_filter(explode(' ', $data['tags'])));
     for ($i = 0; $i < count($data['tags']); $i++) {
-        $data['tags'][$i] = '#'. $data['tags'][$i];
+         // Keep tags strictly alphanumerical because Twitter only allows that.
+        $data['tags'][$i] = get_tagify($data['tags'][$i]);
     }
 
-    $data['permalink'] = index_url($_SERVER) . '?' . $data['shorturl'];
 
-    $format = $conf->get('plugins.TWITTER_TWEET_FORMAT', DEFAULT_FORMAT);
+    $data['permalink'] = index_url($_SERVER) . '?' . $data['shorturl'];
+   
+    // In case of note, we use permalink
+   if (is_link_note($data)) {
+        $data['url'] = $data['permalink'];
+        // Hide URL when sharing a note (microblog mode)
+        $hide = $conf->get('plugins.TWITTER_HIDE_URL', TWEET_HIDE_URL);
+        if ($hide == 'yes') {
+            $format = $conf->get('plugins.TWITTER_TWEET_FORMAT', TWEET_DEFAULT_FORMAT);
+            $data['url'] = '';
+            $tweet = format_tweet($data, $format);
+            $data['url'] = (get_current_length($tweet) >= TWEET_LENGTH) ? $data['permalink'] : '';
+        }
+    }
+
+    $format = $conf->get('plugins.TWITTER_TWEET_FORMAT', TWEET_DEFAULT_FORMAT);
     $tweet = format_tweet($data, $format);
     $response = tweet($conf, $tweet);
     $response = json_decode($response, true);
@@ -172,8 +205,8 @@ function tweet($conf, $tweet)
  */
 function format_tweet($link, $format)
 {
-    // Tweets are limited to 140 chars, we need to prioritize what will be displayed
-    $priorities = array('url', 'permalink', 'title', 'tags', 'description');
+    // Tweets are limited to 280 chars, we need to prioritize what will be displayed
+    $priorities = TWEET_ALLOWED_PLACEHOLDERS;
 
     $tweet = $format;
     foreach ($priorities as $priority) {
@@ -295,4 +328,29 @@ function is_config_valid($conf)
         }
     }
     return true;
+}
+
+/**
+ * Determines if the link is a note.
+ * From kalvn's shaarli2mastodon - https://github.com/kalvn/shaarli2mastodon
+ * 
+ * @param  array  $link The link to check.
+ * 
+ * @return boolean      Whether the link is a note or not.
+ */
+function is_link_note($link){
+    return $link['shorturl'] === substr($link['url'], 1);
+}
+
+/**
+ * Modifies a tag to make them real Tweet tags.
+ * From kalvn's shaarli2mastodon - https://github.com/kalvn/shaarli2mastodon
+ * 
+ * @param  string $tag The tag to change.
+ * 
+ * @return string      The tag modified to be valid.
+ */
+function get_tagify($tag){
+    // Regex inspired by https://gist.github.com/janogarcia/3946583
+    return '#' . preg_replace('/[^0-9_\p{L}]/u', '', $tag);
 }
