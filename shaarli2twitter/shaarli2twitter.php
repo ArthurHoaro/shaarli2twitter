@@ -205,7 +205,9 @@ function format_tweet($link, $format, $hideUrl)
     // Hide URL when sharing a note (microblog mode)
     if ($hideUrl == 'yes' && is_link_note($link)) {
         unset($priorities[array_search('url', $priorities)]);
+        unset($priorities[array_search('permalink', $priorities)]);
         $priorities[] = 'url';
+        $priorities[] = 'permalink';
     }
 
     $tweet = $format;
@@ -217,7 +219,7 @@ function format_tweet($link, $format, $hideUrl)
         $tweet = replace_placeholder($tweet, $priority, $link[$priority]);
     }
 
-    return $tweet;
+    return trim($tweet);
 }
 
 /**
@@ -239,7 +241,11 @@ function replace_placeholder($tweet, $placeholder, $value)
     // Tweets URL have a fixed size due to t.co
     $valueLength = ($placeholder != 'url' && $placeholder != 'permalink') ? strlen($value) : TWEET_URL_LENGTH;
     if ($current + $valueLength > TWEET_LENGTH) {
-        $value = mb_strcut($value, 0, TWEET_LENGTH - $current - 3) . '…';
+        if ($placeholder != 'url' && $placeholder != 'permalink') {
+            $value = mb_strcut($value, 0, TWEET_LENGTH - $current - 3) . '…';
+        } else {
+            $value = '';
+        }
     }
     return str_replace('${'. $placeholder .'}', $value, $tweet);
 }

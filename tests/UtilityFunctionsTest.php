@@ -18,4 +18,20 @@ class UtilityFunctionsTest extends PHPUnit_Framework_TestCase
         $expected = 'bla ' . str_repeat('#', TWEET_URL_LENGTH) . '.';
         $this->assertEquals($expected, replace_url_by_tco($tweet));
     }
+
+    public function testFormatWithoutURL()
+    {
+        $link = [
+            'description' => 'Rem ut sunt eum veritatis ut et voluptatum consectetur. Quod consectetur porro fugiat. '
+                            .'Provident dolor praesentium perspiciatis rerum. Et facilis et voluptatem debitis animi '
+                            .'totam dolores. Provident ipsum nihil iure. Rem ut sunt eum veritatis ut et voluptatum '
+                            .'consectetur.',
+            'permalink'   => 'http://abc.def',
+            'shorturl'    => 'kek',
+            'url'         => '?kek',
+            'tags'        => '',
+            'title'       => '',
+        ];
+        $this->assertEquals($link['description'], format_tweet($link, '${description} ${permalink}', 'yes'));
+    }
 }
