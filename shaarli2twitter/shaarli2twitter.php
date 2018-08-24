@@ -7,7 +7,7 @@
  * Note: this requires a valid API authentication using OAuth.
  *
  *
- * Compatibility: Shaarli v0.8.1.
+ * Compatibility: Shaarli v0.8.1 and higher.
  */
 
 /**
@@ -110,22 +110,15 @@ function hook_shaarli2twitter_save_link($data, $conf)
 
 
     $data['permalink'] = index_url($_SERVER) . '?' . $data['shorturl'];
-   
+
     // In case of note, we use permalink
-   if (is_link_note($data)) {
+    if (is_link_note($data)) {
         $data['url'] = $data['permalink'];
-        // Hide URL when sharing a note (microblog mode)
-        $hide = $conf->get('plugins.TWITTER_HIDE_URL', TWEET_HIDE_URL);
-        if ($hide == 'yes') {
-            $format = $conf->get('plugins.TWITTER_TWEET_FORMAT', TWEET_DEFAULT_FORMAT);
-            $data['url'] = '';
-            $tweet = format_tweet($data, $format);
-            $data['url'] = (get_current_length($tweet) >= TWEET_LENGTH) ? $data['permalink'] : '';
-        }
     }
 
+    $hide = $conf->get('plugins.TWITTER_HIDE_URL', TWEET_HIDE_URL);
     $format = $conf->get('plugins.TWITTER_TWEET_FORMAT', TWEET_DEFAULT_FORMAT);
-    $tweet = format_tweet($data, $format);
+    $tweet = format_tweet($data, $format, $hide);
     $response = tweet($conf, $tweet);
     $response = json_decode($response, true);
     // If an error has occurred, not blocking: just log it.
@@ -198,15 +191,22 @@ function tweet($conf, $tweet)
  *   3. Tags
  *   4. Description
  *
- * @param array  $link   Link data.
- * @param string $format Tweet format with placeholders.
+ * @param array  $link    Link data.
+ * @param string $format  Tweet format with placeholders.
+ * @param bool   $hideUrl Hide URL if it's a note and the tweet is too long.
  *
  * @return string Message to tweet.
  */
-function format_tweet($link, $format)
+function format_tweet($link, $format, $hideUrl)
 {
     // Tweets are limited to 280 chars, we need to prioritize what will be displayed
     $priorities = TWEET_ALLOWED_PLACEHOLDERS;
+
+    // Hide URL when sharing a note (microblog mode)
+    if ($hideUrl == 'yes' && is_link_note($link)) {
+        unset($priorities[array_search('url', $priorities)]);
+        $priorities[] = 'url';
+    }
 
     $tweet = $format;
     foreach ($priorities as $priority) {
