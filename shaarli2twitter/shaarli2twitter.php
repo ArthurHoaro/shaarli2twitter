@@ -344,8 +344,8 @@ function is_config_valid($conf)
  * 
  * @return boolean      Whether the link is a note or not.
  */
-function is_link_note($link){
-    return $link['shorturl'] === substr($link['url'], 1);
+function is_link_note($link) {
+    return $link['permalink'] === $link['url'];
 }
 
 /**
@@ -356,7 +356,7 @@ function is_link_note($link){
  * 
  * @return string      The tag modified to be valid.
  */
-function get_tagify($tag){
+function get_tagify($tag) {
     // Regex inspired by https://gist.github.com/janogarcia/3946583
     return '#' . preg_replace('/[^0-9_\p{L}]/u', '', $tag);
 }
