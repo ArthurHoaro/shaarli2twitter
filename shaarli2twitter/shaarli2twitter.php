@@ -345,7 +345,7 @@ function is_config_valid($conf)
  * @return boolean      Whether the link is a note or not.
  */
 function is_link_note($link) {
-    return $link['permalink'] === $link['url'];
+    return strpos($link['url'], $link['shorturl']) !== false;
 }
 
 /**
