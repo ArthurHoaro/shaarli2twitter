@@ -1,6 +1,6 @@
 <?php
 
-namespace Shaarli\plugins\shaarli2twitter\TwitterApi\TwitterAPIExchange;
+//namespace Shaarli\plugins\shaarli2twitter\TwitterApi\TwitterAPIExchange;
 
 /**
  * Twitter-API-PHP : Simple PHP wrapper for the v1.1 API
