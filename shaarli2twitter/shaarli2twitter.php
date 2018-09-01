@@ -121,8 +121,8 @@ function hook_shaarli2twitter_save_link($data, $conf)
 
     $hide = $conf->get('plugins.TWITTER_HIDE_URL', TWEET_HIDE_URL);
     $format = $conf->get('plugins.TWITTER_TWEET_FORMAT', TWEET_DEFAULT_FORMAT);
-    $tweet = format_tweet($data, $format, $hide);
-    $response = tweet($conf, $tweet);
+    $tweet = s2t_format_tweet($data, $format, $hide);
+    $response = s2t_tweet($conf, $tweet);
     $response = json_decode($response, true);
     // If an error has occurred, not blocking: just log it.
     if (isset($response['errors'])) {
@@ -167,7 +167,7 @@ function hook_shaarli2twitter_render_editlink($data, $conf)
  *
  * @return string JSON response string.
  */
-function tweet($conf, $tweet)
+function s2t_tweet($conf, $tweet)
 {
     require_once 'TwitterApi/TwitterAPIExchange.php';
 
@@ -202,7 +202,7 @@ function tweet($conf, $tweet)
  *
  * @return string Message to tweet.
  */
-function format_tweet($link, $format, $hideUrl)
+function s2t_format_tweet($link, $format, $hideUrl)
 {
     // Tweets are limited to 280 chars, we need to prioritize what will be displayed
     $priorities = TWEET_ALLOWED_PLACEHOLDERS;
@@ -221,11 +221,11 @@ function format_tweet($link, $format, $hideUrl)
 
     $tweet = $format;
     foreach ($priorities as $priority) {
-        if (get_current_length($tweet) >= TWEET_LENGTH) {
-            return remove_remaining_placeholders($tweet);
+        if (s2t_get_current_length($tweet) >= TWEET_LENGTH) {
+            return s2t_remove_remaining_placeholders($tweet);
         }
 
-        $tweet = replace_placeholder($tweet, $priority, $link[$priority]);
+        $tweet = s2t_replace_placeholder($tweet, $priority, $link[$priority]);
     }
 
     return trim($tweet);
@@ -240,13 +240,13 @@ function format_tweet($link, $format, $hideUrl)
  *
  * @return string $tweet with $placeholder replaced by $value.
  */
-function replace_placeholder($tweet, $placeholder, $value)
+function s2t_replace_placeholder($tweet, $placeholder, $value)
 {
     if (is_array($value)) {
-        return replace_placeholder_array($tweet, $placeholder, $value);
+        return s2t_replace_placeholder_array($tweet, $placeholder, $value);
     }
 
-    $current = get_current_length($tweet);
+    $current = s2t_get_current_length($tweet);
     // Tweets URL have a fixed size due to t.co
     $valueLength = ($placeholder != 'url' && $placeholder != 'permalink') ? strlen($value) : TWEET_URL_LENGTH;
     if ($current + $valueLength > TWEET_LENGTH) {
@@ -270,11 +270,11 @@ function replace_placeholder($tweet, $placeholder, $value)
  *
  * @return string $tweet with $placeholder replace by the list of $value.
  */
-function replace_placeholder_array($tweet, $placeholder, $value)
+function s2t_replace_placeholder_array($tweet, $placeholder, $value)
 {
     $items = '';
     for ($i = 0; $i < count($value); $i++) {
-        $current = get_current_length($tweet);
+        $current = s2t_get_current_length($tweet);
         $space = $i == 0 ? '' : ' ';
         if ($current + strlen($items) + strlen($value[$i] . $space) > TWEET_LENGTH) {
             break;
@@ -292,9 +292,9 @@ function replace_placeholder_array($tweet, $placeholder, $value)
  *
  * @return int Tweet length.
  */
-function get_current_length($tweet)
+function s2t_get_current_length($tweet)
 {
-    return strlen(remove_remaining_placeholders(s2t_replace_url_by_tco($tweet)));
+    return strlen(s2t_remove_remaining_placeholders(s2t_replace_url_by_tco($tweet)));
 }
 
 /**
@@ -304,7 +304,7 @@ function get_current_length($tweet)
  *
  * @return string $tweet without any placeholder.
  */
-function remove_remaining_placeholders($tweet)
+function s2t_remove_remaining_placeholders($tweet)
 {
     return preg_replace('#\${\w+}#', '', $tweet);
 }

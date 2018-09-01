@@ -34,7 +34,7 @@ class UtilityFunctionsTest extends TestCase
             'tags'        => '',
             'title'       => '',
         ];
-        $this->assertEquals($link['description'], format_tweet($link, '${description} ${permalink}', 'yes'));
+        $this->assertEquals($link['description'], s2t_format_tweet($link, '${description} ${permalink}', 'yes'));
     }
 
     public function testMaximumLength()
@@ -55,11 +55,11 @@ class UtilityFunctionsTest extends TestCase
                             .'Xbone games too. This has been going on for about 6 years. Usually it\'s just me at home'
                             .'doing all this. If you squint you may recognize one of these:… https://t.co/ojbwNHM7w8"',
         ];
-        $tweet = format_tweet($link, '${description} ${permalink}', 'yes');
+        $tweet = s2t_format_tweet($link, '${description} ${permalink}', 'yes');
         $this->assertEquals(TWEET_LENGTH, strlen(s2t_replace_url_by_tco($tweet)));
-        $tweet = format_tweet($link, '#Shaarli ${title} — ${description} ${permalink} ${tags}', 'yes');
+        $tweet = s2t_format_tweet($link, '#Shaarli ${title} — ${description} ${permalink} ${tags}', 'yes');
         $this->assertEquals(TWEET_LENGTH, strlen(s2t_replace_url_by_tco($tweet)));
-        $tweet = format_tweet($link, '#Shaarli ${title} — ${description} ${url} ${tags}', 'yes');
+        $tweet = s2t_format_tweet($link, '#Shaarli ${title} — ${description} ${url} ${tags}', 'yes');
         $this->assertEquals(TWEET_LENGTH, strlen(s2t_replace_url_by_tco($tweet)));
     }
 }
