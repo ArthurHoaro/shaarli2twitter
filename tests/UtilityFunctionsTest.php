@@ -34,4 +34,25 @@ class UtilityFunctionsTest extends PHPUnit_Framework_TestCase
         ];
         $this->assertEquals($link['description'], format_tweet($link, '${description} ${permalink}', 'yes'));
     }
+
+    public function testMaximumLength()
+    {
+        $link = [
+            'description' => 'Rem ut sunt eum veritatis ut et voluptatum consectetur. Quod consectetur porro fugiat. '
+                            .'Provident dolor praesentium perspiciatis rerum. Et facilis et voluptatem debitis animi '
+                            .'totam dolores. Provident ipsum nihil iure. Rem ut sunt eum veritatis ut et voluptatum '
+                            .'consectetur. Rem ut sunt eum veritatis ut et voluptatum consectetur. Quod consectetur. '
+                            .'Provident dolor praesentium perspiciatis rerum. Et facilis et voluptatem debitis animi '
+                            .'totam dolores. Provident ipsum nihil iure. Rem ut sunt eum veritatis ut et voluptatum '
+                            .'consectetur.',
+            'permalink'   => 'https://links.hoa.ro/?UYepZA',
+            'shorturl'    => 'UYepZA',
+            'url'         => '?UYepZA',
+            'tags'        => ['linux', 'games'],
+            'title'       => 'Ethan Lee sur Twitter : "#MeetTheDev I make Linux games. Sometimes macOS and Switch and '
+                            .'Xbone games too. This has been going on for about 6 years. Usually it\'s just me at home'
+                            .'doing all this. If you squint you may recognize one of these:… https://t.co/ojbwNHM7w8"',
+        ];
+        $this->assertEquals(TWEET_LENGTH, strlen(format_tweet($link, '${description} ${permalink}', 'yes')));
+    }
 }

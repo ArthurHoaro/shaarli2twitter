@@ -5,7 +5,7 @@
     colors="true">
   <filter>
     <whitelist addUncoveredFilesFromWhitelist="true">
-      <directory suffix=".php">application</directory>
+      <directory>.</directory>
     </whitelist>
   </filter>
   <logging>

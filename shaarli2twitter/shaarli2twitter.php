@@ -125,6 +125,7 @@ function hook_shaarli2twitter_save_link($data, $conf)
     if (isset($response['errors'])) {
         foreach ($response['errors'] as $error) {
             error_log('Twitter error '. $error['code'] .': '. $error['message']);
+            error_log('Tweet: "'. $tweet .'"');
         }
     }
 
