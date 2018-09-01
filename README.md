@@ -10,14 +10,15 @@ to post it on Twitter.
 
 ## Requirements
 
-  - PHP 5.3
+  - PHP 5.6
   - PHP cURL extension
   - PHP mbstring extension
-  - Shaarli >= v0.8.1
+  - Shaarli >= v0.8.1 (still valid in v0.10.2)
 
 ## Installation
 
-Download the latest release, and put the folder `shaarli2twitter` under your `plugins/` directory.
+Download the latest [release](https://github.com/ArthurHoaro/shaarli2twitter/releases),
+and put the folder `shaarli2twitter` under your `plugins/` directory.
 
 Then you can enable the plugin in the plugin administration page `http://shaarli.tld/?do=pluginadmin`.
  
@@ -77,6 +78,12 @@ Default format: `#Shaarli: ${title} ${url} ${tags}`
 Which will render, for example as:
 
     #Shaarli: Wikipedia, the free encyclopedia https://en.wikipedia.org/wiki/Main_Page #crowdsourcing #knowledge
+
+### TWITTER_HIDE_URL
+
+Hide ${url} and/or ${permalink} when sharing a note to long to hold in a tweet.
+
+Values: `yes` to hide URL or `no` to keep them. Default value is `no`.
 
 ## License
 
