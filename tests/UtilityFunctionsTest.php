@@ -1,8 +1,10 @@
 <?php
 
-require_once 'shaarli2twitter/shaarli2twitter.php';
+namespace Shaarli\Plugins\Shaarli2Twitter;
 
-class UtilityFunctionsTest extends PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class UtilityFunctionsTest extends TestCase
 {
     public function testReplaceUrlByTcoDefault()
     {

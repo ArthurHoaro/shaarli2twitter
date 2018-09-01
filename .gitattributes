@@ -1,0 +1,37 @@
+# Set default behavior
+*       text=auto eol=lf
+
+# Ensure sources are processed
+*.css   text
+*.html  text diff=html
+*.js    text
+*.md    text
+*.php   text diff=php
+
+# Do not alter images nor minified scripts nor fonts
+*.ico           binary
+*.jpg           binary
+*.png           binary
+*.svg           binary
+*.otf           binary
+*.eot           binary
+*.woff          binary
+*.woff2         binary
+*.ttf           binary
+*.min.css       binary
+*.min.js        binary
+*.mo            binary
+
+# Exclude from Git archives
+.editorconfig     export-ignore
+.dev              export-ignore
+.gitattributes    export-ignore
+.github           export-ignore
+.gitignore        export-ignore
+.travis.yml       export-ignore
+composer.json     export-ignore
+composer.lock     export-ignore
+Makefile          export-ignore
+mkdocs.yml        export-ignore
+phpunit.xml       export-ignore
+tests/            export-ignore

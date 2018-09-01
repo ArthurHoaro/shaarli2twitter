@@ -10,6 +10,8 @@
  * Compatibility: Shaarli v0.8.1 and higher.
  */
 
+use Shaarli\plugins\shaarli2twitter\TwitterApi\TwitterAPIExchange;
+
 /**
  * Maximum tweet length.
  */
