@@ -169,7 +169,7 @@ function hook_shaarli2twitter_render_editlink($data, $conf)
  */
 function tweet($conf, $tweet)
 {
-    require_once 'twitter-api/TwitterAPIExchange.php';
+    require_once 'TwitterApi/TwitterAPIExchange.php';
 
     $endpoint = 'https://api.twitter.com/1.1/statuses/update.json';
     $postfields = [
