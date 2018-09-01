@@ -5,11 +5,10 @@
     colors="true">
   <filter>
     <whitelist addUncoveredFilesFromWhitelist="true">
-      <directory>.</directory>
+      <directory suffix=".php">shaarli2twitter</directory>
     </whitelist>
   </filter>
   <logging>
-    <log type="coverage-html" target="coverage" lowUpperBound="30" highLowerBound="80"/>
     <log type="coverage-text" target="php://stdout" showUncoveredFiles="true"/>
   </logging>
 </phpunit>

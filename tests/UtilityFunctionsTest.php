@@ -8,15 +8,15 @@ class UtilityFunctionsTest extends PHPUnit_Framework_TestCase
     {
         $tweet = 'bla https://domain.tld:443/test?oui=non#hash #bloup';
         $expected = 'bla ' . str_repeat('#', TWEET_URL_LENGTH) . ' #bloup';
-        $this->assertEquals($expected, replace_url_by_tco($tweet));
+        $this->assertEquals($expected, s2t_replace_url_by_tco($tweet));
 
         $tweet = 'bla https://domain.tld:443/test.php?oui=non#hash';
         $expected = 'bla ' . str_repeat('#', TWEET_URL_LENGTH);
-        $this->assertEquals($expected, replace_url_by_tco($tweet));
+        $this->assertEquals($expected, s2t_replace_url_by_tco($tweet));
 
         $tweet = 'bla http://domain.tld.';
         $expected = 'bla ' . str_repeat('#', TWEET_URL_LENGTH) . '.';
-        $this->assertEquals($expected, replace_url_by_tco($tweet));
+        $this->assertEquals($expected, s2t_replace_url_by_tco($tweet));
     }
 
     public function testFormatWithoutURL()
@@ -47,12 +47,17 @@ class UtilityFunctionsTest extends PHPUnit_Framework_TestCase
                             .'consectetur.',
             'permalink'   => 'https://links.hoa.ro/?UYepZA',
             'shorturl'    => 'UYepZA',
-            'url'         => '?UYepZA',
+            'url'         => 'https://twitter.com/flibitijibibo/status/1035618226435235844',
             'tags'        => ['linux', 'games'],
             'title'       => 'Ethan Lee sur Twitter : "#MeetTheDev I make Linux games. Sometimes macOS and Switch and '
                             .'Xbone games too. This has been going on for about 6 years. Usually it\'s just me at home'
                             .'doing all this. If you squint you may recognize one of these:… https://t.co/ojbwNHM7w8"',
         ];
-        $this->assertEquals(TWEET_LENGTH, strlen(format_tweet($link, '${description} ${permalink}', 'yes')));
+        $tweet = format_tweet($link, '${description} ${permalink}', 'yes');
+        $this->assertEquals(TWEET_LENGTH, strlen(s2t_replace_url_by_tco($tweet)));
+        $tweet = format_tweet($link, '#Shaarli ${title} — ${description} ${permalink} ${tags}', 'yes');
+        $this->assertEquals(TWEET_LENGTH, strlen(s2t_replace_url_by_tco($tweet)));
+        $tweet = format_tweet($link, '#Shaarli ${title} — ${description} ${url} ${tags}', 'yes');
+        $this->assertEquals(TWEET_LENGTH, strlen(s2t_replace_url_by_tco($tweet)));
     }
 }
