@@ -10,7 +10,9 @@
  * Compatibility: Shaarli v0.8.1 and higher.
  */
 
-//use Shaarli\plugins\shaarli2twitter\TwitterApi\TwitterAPIExchange;
+use Shaarli\Config\ConfigManager;
+use Shaarli\Plugin\PluginManager;
+use Shaarli\Router;
 
 /**
  * Maximum tweet length.
@@ -181,7 +183,7 @@ function s2t_tweet($conf, $tweet)
         'oauth_access_token'        => $conf->get('plugins.TWITTER_ACCESS_TOKEN'),
         'oauth_access_token_secret' => $conf->get('plugins.TWITTER_ACCESS_TOKEN_SECRET'),
     ];
-    $twitter = new TwitterAPIExchange($settings);
+    $twitter = new \TwitterAPIExchange($settings);
 
     return $twitter->buildOauth($endpoint, 'POST')
         ->setPostfields($postfields)
