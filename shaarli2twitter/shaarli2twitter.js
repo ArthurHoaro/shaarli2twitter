@@ -1,3 +1,24 @@
+function toggleLinkDisplay(linkZone, link, textareaZone, textarea, show) {
+  if (show) {
+    linkZone.classList.remove('hidden')
+  } else {
+    linkZone.classList.add('hidden')
+    toggleEditZone(linkZone, link, textareaZone, textarea, false);
+  }
+}
+
+function toggleEditZone(linkZone, link, textareaZone, textarea, show) {
+  if (show) {
+    textareaZone.classList.remove('hidden');
+    textarea.disabled = false;
+    link.innerHTML = 'cancel';
+  } else {
+    textareaZone.classList.add('hidden');
+    textarea.disabled = true;
+    link.innerHTML = 'edit';
+  }
+}
+
 document.addEventListener('DOMContentLoaded', function(event) {
   var privateInput = document.getElementsByName('lf_private')[0];
   var tweetInput = document.getElementsByName('tweet')[0];
@@ -5,24 +26,28 @@ document.addEventListener('DOMContentLoaded', function(event) {
     return;
   }
 
-  privateInput.addEventListener('click', function (event) {
-    tweetInput.disabled = privateInput.checked;
-  });
-
+  var editLinkZone = document.getElementById('s2t-edit-zone');
+  var editLink = document.getElementById('s2t-edit');
   var textareaZone = document.getElementById('tweet-textarea');
   var textarea = document.querySelector('#tweet-textarea textarea');
 
-  document.getElementById('s2t-edit').addEventListener('click', function (event) {
+  tweetInput.disabled = privateInput.checked;
+  if (privateInput.checked) {
+    toggleLinkDisplay(editLinkZone, editLink, textareaZone, textarea, false);
+  }
+  privateInput.addEventListener('click', function (event) {
+    tweetInput.disabled = privateInput.checked;
+    toggleLinkDisplay(editLinkZone, editLink, textareaZone, textarea, !tweetInput.disabled && tweetInput.checked);
+  });
+
+  tweetInput.addEventListener('click', function (event) {
+    toggleLinkDisplay(editLinkZone, editLink, textareaZone, textarea, event.target.checked);
+  });
+
+
+  editLink.addEventListener('click', function (event) {
     event.preventDefault();
-    if (textarea.disabled === false) {
-      textareaZone.classList.add('hidden');
-      textarea.disabled = true;
-      event.target.innerHTML = 'edit';
-    } else {
-      textareaZone.classList.remove('hidden');
-      textarea.disabled = false;
-      event.target.innerHTML = 'cancel';
-    }
+    toggleEditZone(editLinkZone, editLink, textareaZone, textarea, textarea.disabled)
   });
 
   var injectors = document.querySelectorAll('.s2t-inject');
