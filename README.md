@@ -4,7 +4,7 @@ This plugin uses the Twitter API to automatically tweet public links published o
 [Shaarli](https://github.com/shaarli/Shaarli/).
 
 Everytime a new link is shaared, use the "Tweet" checkbox in the form 
-to post it on Twitter.
+to post it on Twitter. You can edit every tweet format manually if needed.
 
 > Note: private links and link edits can't be tweeted.
 
@@ -13,7 +13,7 @@ to post it on Twitter.
   - PHP 5.6
   - PHP cURL extension
   - PHP mbstring extension
-  - Shaarli >= v0.8.1 (still valid in v0.10.2)
+  - Shaarli >= v0.8.1 (still valid in v0.11.1)
 
 ## Installation
 

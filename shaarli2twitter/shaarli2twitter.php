@@ -68,6 +68,22 @@ function shaarli2twitter_init($conf)
 }
 
 /**
+ * Add the CSS file for editlink page
+ *
+ * @param array $data - header data.
+ *
+ * @return mixed - header data with s2t CSS file added.
+ */
+function hook_shaarli2twitter_render_includes($data)
+{
+    if ($data['_PAGE_'] == Router::$PAGE_EDITLINK) {
+        $data['css_files'][] = PluginManager::$PLUGINS_PATH . '/shaarli2twitter/shaarli2twitter.css';
+    }
+
+    return $data;
+}
+
+/**
  * Add the JS file: disable the tweet button if the link is set to private.
  *
  * @param array         $data New link values.
@@ -122,7 +138,11 @@ function hook_shaarli2twitter_save_link($data, $conf)
     }
 
     $hide = $conf->get('plugins.TWITTER_HIDE_URL', TWEET_HIDE_URL);
-    $format = $conf->get('plugins.TWITTER_TWEET_FORMAT', TWEET_DEFAULT_FORMAT);
+    if (! empty($_POST['s2t-content'])) {
+        $format = escape($_POST['s2t-content']);
+    } else {
+        $format = $conf->get('plugins.TWITTER_TWEET_FORMAT', TWEET_DEFAULT_FORMAT);
+    }
     $tweet = s2t_format_tweet($data, $format, $hide);
     $response = s2t_tweet($conf, $tweet);
     $response = json_decode($response, true);
@@ -154,7 +174,11 @@ function hook_shaarli2twitter_render_editlink($data, $conf)
     $private = $conf->get('privacy.default_private_links', false);
 
     $html = file_get_contents(PluginManager::$PLUGINS_PATH . '/shaarli2twitter/edit_link.html');
-    $html = sprintf($html, $private ? '' : 'checked="checked"');
+    $html = sprintf(
+        $html,
+        $private ? '' : 'checked="checked"',
+        $conf->get('plugins.TWITTER_TWEET_FORMAT', TWEET_DEFAULT_FORMAT)
+    );
 
     $data['edit_link_plugin'][] = $html;
 
