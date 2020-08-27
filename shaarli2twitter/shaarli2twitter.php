@@ -12,7 +12,7 @@
 
 use Shaarli\Config\ConfigManager;
 use Shaarli\Plugin\PluginManager;
-use Shaarli\Router;
+use Shaarli\Render\TemplatePage;
 
 /**
  * Maximum tweet length.
@@ -76,7 +76,7 @@ function shaarli2twitter_init($conf)
  */
 function hook_shaarli2twitter_render_includes($data)
 {
-    if ($data['_PAGE_'] == Router::$PAGE_EDITLINK) {
+    if ($data['_PAGE_'] == TemplatePage::EDIT_LINK) {
         $data['css_files'][] = PluginManager::$PLUGINS_PATH . '/shaarli2twitter/shaarli2twitter.css';
     }
 
@@ -93,7 +93,7 @@ function hook_shaarli2twitter_render_includes($data)
  */
 function hook_shaarli2twitter_render_footer($data, $conf)
 {
-    if ($data['_PAGE_'] == Router::$PAGE_EDITLINK) {
+    if ($data['_PAGE_'] == TemplatePage::EDIT_LINK) {
         $data['js_files'][] = PluginManager::$PLUGINS_PATH . '/shaarli2twitter/shaarli2twitter.js';
     }
 
