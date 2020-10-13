@@ -130,7 +130,7 @@ function hook_shaarli2twitter_save_link($data, $conf)
     }
 
 
-    $data['permalink'] = index_url($_SERVER) . '?' . $data['shorturl'];
+    $data['permalink'] = index_url($_SERVER) . 'shaare/' . $data['shorturl'];
 
     // In case of note, we use permalink
     if (s2t_is_link_note($data)) {
